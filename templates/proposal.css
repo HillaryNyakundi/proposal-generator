@@ -1,0 +1,142 @@
+/* Branded proposal stylesheet — shared by the PDF and DOCX pipelines. */
+
+@page {
+  margin: 24mm 18mm;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1f2937;
+  line-height: 1.55;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+}
+
+/* ---- Cover page (built from front-matter) ---- */
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  padding: 40mm 20mm;
+  box-sizing: border-box;
+  page-break-after: always;
+}
+
+.cover .logo {
+  display: block;
+  max-width: 220px;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+  margin: 0 auto 24px;
+}
+
+.brand {
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #2563eb;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+
+.cover .subtitle {
+  font-size: 22px;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.divider {
+  width: 120px;
+  height: 4px;
+  background: #2563eb;
+  margin: 18px auto;
+  border-radius: 999px;
+}
+
+.cover .meta {
+  margin-top: 22px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* ---- Content ---- */
+.content {
+  padding: 18mm;
+}
+
+h1 {
+  font-size: 44px;
+  line-height: 1.1;
+  margin: 0 0 14px 0;
+  color: #111827;
+}
+
+h2 {
+  font-size: 22px;
+  margin: 28px 0 12px;
+  color: #111827;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 6px;
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: 16px;
+  margin: 18px 0 10px;
+  color: #111827;
+  page-break-after: avoid;
+}
+
+p {
+  margin: 0 0 12px 0;
+}
+
+ul,
+ol {
+  margin: 0 0 12px 22px;
+  padding: 0;
+}
+
+li {
+  margin: 0 0 6px 0;
+  page-break-inside: avoid;
+}
+
+/* ---- Tables (for pricing / timelines) ---- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+th,
+td {
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f9fafb;
+  color: #111827;
+}
+
+/* ---- Helpers ---- */
+.page-break {
+  page-break-after: always;
+}
+
+blockquote {
+  margin: 0 0 12px 0;
+  padding: 8px 16px;
+  border-left: 4px solid #2563eb;
+  background: #f9fafb;
+  color: #374151;
+}

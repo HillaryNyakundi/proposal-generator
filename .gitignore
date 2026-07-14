@@ -1,2 +1,5 @@
 node_modules/
+
+# Generated documents
 *.pdf
+*.docx

@@ -1,20 +1,25 @@
-# PDF Generator
+# Proposal Generator
 
-A small Node.js script that converts an HTML file into a print-ready PDF using [Puppeteer](https://pptr.dev/). It renders `proposal.html` in a headless Chromium browser and outputs an A4 PDF with page numbers in the footer.
+Write a proposal once in **Markdown**, generate branded **PDF** and **DOCX** documents from it. Content lives in `proposal.md` (with a front-matter header for cover-page fields); styling lives in one CSS file; a small TypeScript pipeline renders Markdown → HTML → PDF/DOCX.
 
-## Features
+- **PDF** via [Puppeteer](https://pptr.dev/) (headless Chromium, pixel-accurate).
+- **DOCX** via [@turbodocx/html-to-docx](https://www.npmjs.com/package/@turbodocx/html-to-docx) (editable Word document).
 
-- Renders HTML (including CSS backgrounds) to PDF via headless Chromium
-- A4 page format with sensible print margins
-- Automatic `Page X of Y` footer on every page
-- Waits for the network to be idle so all assets load before printing
+- **Full documentation lives in [docs/](docs/)** — see [docs/README.md](docs/README.md) for the map ([getting started](docs/getting-started.md), [authoring](docs/authoring.md), [architecture](docs/architecture.md), [styling](docs/styling.md), [CLI](docs/cli.md), [new proposal](docs/new-proposal.md), [troubleshooting](docs/troubleshooting.md)).
+
+## Why Markdown
+
+- Easy to edit for every new client — change the front-matter and body, nothing else.
+- Version-control friendly.
+- One source of truth converts cleanly to both HTML-based PDF and DOCX.
+- Styled with your own CSS ([templates/proposal.css](templates/proposal.css)) — reusable across proposals.
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) (v18 or newer recommended)
 - npm
 
-Puppeteer downloads its own copy of Chromium on install, so no separate browser setup is needed.
+Puppeteer downloads its own Chromium on install; no separate browser setup needed. TypeScript runs directly via [tsx](https://www.npmjs.com/package/tsx) — there is no build step.
 
 ## Installation
 
@@ -24,45 +29,90 @@ npm install
 
 ## Usage
 
-1. Place the HTML you want to convert in the project root as `proposal.html` (or edit the path in [generate-pdf.js](generate-pdf.js)).
-2. Run the script:
+Edit [proposal.md](proposal.md), then run:
 
 ```bash
-node generate-pdf.js
+npm run generate   # both PDF and DOCX
+npm run pdf        # PDF only
+npm run docx       # DOCX only
 ```
 
-3. The generated PDF is written to the project root (default: `Safeschoolbus_Proposal.pdf`).
+Outputs are written next to the Markdown file. The filename comes from the `output` field in the front-matter (default: `Safeschoolbus_Proposal.pdf` / `.docx`).
 
-On success you'll see:
+You can also point the pipeline at a different Markdown file:
 
+```bash
+npx tsx src/index.ts path/to/other-proposal.md
 ```
-PDF created successfully!
+
+## Writing a proposal
+
+`proposal.md` starts with a YAML front-matter block that fills the cover page, followed by the Markdown body:
+
+```markdown
+---
+title: School Transport Safety System Proposal
+brand: Safeschoolbus
+logo: assets/logo.png            # optional; path relative to proposal.md
+subtitle: A short one-line description of the proposal
+preparedBy: Hillary Nyakundi
+projectType: Mobile and web-based system
+techStack: Expo React Native, Node.js, Express
+version: "1.0"
+date: July 2026
+output: Safeschoolbus_Proposal   # base filename for the PDF/DOCX
+---
+
+## 1. Executive Summary
+
+Your content here — headings, lists, **bold**, and tables all work.
+
+| Item | Estimate |
+| --- | ---: |
+| Discovery and planning | KES 80,000 – 150,000 |
 ```
 
-## Configuration
+Every front-matter field is optional — omit any you don't need and the cover adapts. Use `<div class="page-break"></div>` in the body to force a page break in the PDF.
 
-The PDF options live in [generate-pdf.js](generate-pdf.js) and can be adjusted:
+### Adding a logo
 
-| Option | Current value | Description |
-| --- | --- | --- |
-| Input file | `proposal.html` | Source HTML rendered to PDF |
-| Output file | `Safeschoolbus_Proposal.pdf` | Path of the generated PDF |
-| `format` | `A4` | Page size |
-| `printBackground` | `true` | Include CSS background colors/images |
-| `margin` | 24mm / 18mm | Top-bottom / left-right page margins |
-| Footer | `Page X of Y` | Centered page-number footer |
+1. Drop your logo image into the [assets/](assets/) folder (e.g. `assets/logo.png`). PNG, JPG, GIF, WebP, and SVG are supported.
+2. Set (or uncomment) the `logo:` field in the front-matter, pointing at it relative to `proposal.md`.
+3. Regenerate.
 
-To change the header, use the `headerTemplate` option (currently empty).
+The image is inlined as a base64 data URI at render time, so it appears in **both** the PDF and the DOCX with no external file dependency. Display size is capped in [templates/proposal.css](templates/proposal.css) (`.cover .logo`, default max 220×120px) — adjust there. If the file is missing or an unsupported type, the build prints a warning and skips the logo rather than failing.
 
-## Project Structure
+## Project structure
 
 ```
 .
-├── generate-pdf.js   # The conversion script
-├── proposal.html     # Source HTML input
-├── package.json      # Dependencies and metadata
+├── proposal.md              # Content + front-matter (edit this)
+├── assets/                  # Logo and other images
+├── templates/
+│   └── proposal.css         # Branded stylesheet
+├── src/
+│   ├── index.ts             # CLI entry point / orchestrator
+│   ├── render.ts            # Markdown + front-matter → styled HTML
+│   ├── pdf.ts               # HTML → PDF (Puppeteer)
+│   └── docx.ts              # HTML → DOCX (@turbodocx/html-to-docx)
+├── tsconfig.json
+├── package.json
 └── README.md
 ```
+
+## Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run generate` | Generate both PDF and DOCX |
+| `npm run pdf` | Generate PDF only |
+| `npm run docx` | Generate DOCX only |
+| `npm run typecheck` | Type-check the TypeScript sources |
+
+## Notes
+
+- Word documents have no concept of CSS flexbox/grid, so the centered cover page won't match the PDF exactly (the text lands at the top). Headings, paragraphs, tables, and inline styling convert faithfully. For pixel-perfect output, use the PDF.
+- The PDF and DOCX use the same A4 page size and 24mm/18mm margins.
 
 ## License
 
