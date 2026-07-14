@@ -87,7 +87,7 @@ This proposal covers the design and delivery of a complete branding package cons
 - Two revision rounds are included.
 - Additional revisions may incur extra charges.
 - Ownership transfers upon full payment.
-- AVID TECH SOLUTIONS may showcase the completed work in its portfolio unless otherwise agreed.
+- AVID TECH may showcase the completed work in its portfolio unless otherwise agreed.
 
 ## Acceptance
 
